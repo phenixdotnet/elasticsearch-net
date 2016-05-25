@@ -28,10 +28,10 @@ namespace Nest
 
 		internal override void InternalWrapInContainer(IQueryContainer c) => c.Boosting = this;
 		internal static bool IsConditionless(IBoostingQuery q) =>
-			q.NegativeQuery.IsConditionless() && q.PositiveQuery.IsConditionless();
+			!q.NegativeQuery.NotNullAndWritable() && !q.PositiveQuery.NotNullAndWritable();
 	}
 
-	public class BoostingQueryDescriptor<T> 
+	public class BoostingQueryDescriptor<T>
 		: QueryDescriptorBase<BoostingQueryDescriptor<T>, IBoostingQuery>
 		, IBoostingQuery where T : class
 	{
@@ -42,10 +42,10 @@ namespace Nest
 
 		public BoostingQueryDescriptor<T> NegativeBoost(double? boost) => Assign(a => a.NegativeBoost = boost);
 
-		public BoostingQueryDescriptor<T> Positive(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
+		public BoostingQueryDescriptor<T> Positive(Func<QueryContainerDescriptor<T>, QueryContainer> selector) =>
 			Assign(a => a.PositiveQuery = selector?.Invoke(new QueryContainerDescriptor<T>()));
 
-		public BoostingQueryDescriptor<T> Negative(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
+		public BoostingQueryDescriptor<T> Negative(Func<QueryContainerDescriptor<T>, QueryContainer> selector) =>
 			Assign(a => a.NegativeQuery = selector?.Invoke(new QueryContainerDescriptor<T>()));
 	}
 }
